@@ -56,12 +56,12 @@ import SidebarProject from './SidebarProject.vue';
     fixed inset-y-0 start-0 z-[60]
     bg-white border-e border-gray-200
     lg:block lg:translate-x-0 lg:end-auto lg:bottom-0
-    dark:bg-neutral-800 dark:border-neutral-700" role="dialog" tabindex="-1" aria-label="Sidebar">
+    dark:bg-gray-800 dark:border-gray-700" role="dialog" tabindex="-1" aria-label="Sidebar">
     <div class="relative flex flex-col h-full max-h-full">
-        <div class="px-6 pt-4 flex items-center">
+        <div class="px-6 pt-4 flex items-center bg-gray-800 p-3">
             <!-- Logo -->
-            <a class="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="#" aria-label="PMS">
-                PMS
+            <a class="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80 " href="#" aria-label="PMS">
+                <img src="/img/logo1.png" alt="Application Logo" class="w-40 h-auto">
             </a>
             <!-- End Logo -->
 
@@ -83,9 +83,9 @@ import SidebarProject from './SidebarProject.vue';
 
 
                     :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
-                            hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-700
+                            hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                             dark:text-white
-                            ${route().current('dashboard') ? 'bg-gray-400 text-white hover:bg-gray-500 ' : ''}`">
+                            ${route().current('dashboard') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
                 <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Dashboard
                 </Link>
@@ -93,21 +93,18 @@ import SidebarProject from './SidebarProject.vue';
             <!-- Members -->
             <li>
                 <Link
-                    :href="route('members')"
+                    :href="route('users.index')"
                     :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
-                            hover:bg-gray-100 focus:outline-none focus:bg-gray-100
+                            hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                             dark:text-white
-                            ${route().current('members') ? 'bg-gray-400 text-white hover:bg-gray-500 ' : ''}`">
+                            ${route().current('users.index') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
                     <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Members
+                Users
                 </Link>
             </li>
             <hr style="margin: 15px;">
 
             <SidebarProject />
-
-
-
 
             </ul>
         </nav>

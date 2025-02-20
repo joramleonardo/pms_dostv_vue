@@ -2,10 +2,9 @@
 
 <script setup>
         import { ref, onMounted, defineProps, watch } from 'vue';
-        import { useForm, router } from '@inertiajs/vue3';
+        import { useForm, router, Head  } from '@inertiajs/vue3';
         import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
         import CreateProject from '@/Pages/Projects/Create.vue';
-        import { Head } from '@inertiajs/vue3';
         import SearchFilter from '@/Pages/Projects/SearchFilter.vue';
 
         const props = defineProps({
@@ -73,7 +72,6 @@
                 preserveState: true,
                 onSuccess: () => {
                     alert("Project deleted successfully");
-                    fetchProjects(projects.value.current_page); // Ensure pagination updates
                 },
             });
         };

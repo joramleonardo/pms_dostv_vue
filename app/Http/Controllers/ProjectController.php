@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
 
+
 class ProjectController extends Controller
 {
     public function index(Request $request): Response

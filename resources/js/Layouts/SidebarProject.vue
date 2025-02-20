@@ -34,9 +34,9 @@ import { Link } from '@inertiajs/vue3';
     <Link
         :href="route('projects.index')"
         :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
-                hover:bg-gray-100 focus:outline-none focus:bg-gray-100
+                hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                 dark:text-white
-                ${route().current('projects.index') ? 'bg-gray-400 text-white hover:bg-gray-500 ' : ''}`">
+                ${route().current('projects.index') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
         View all projects
     </Link>
 
