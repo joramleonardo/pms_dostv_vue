@@ -1,24 +1,35 @@
 <script setup>
-    import { ref, onMounted } from 'vue';
-    import { useForm } from '@inertiajs/vue3';
+    import { ref, onMounted, defineEmits  } from 'vue';
+    import { useForm, usePage } from '@inertiajs/vue3';
     import 'preline';
+    import { useEventBus } from "@/eventBus";
+
+    const emitRefresh = defineEmits(['refreshTable']);
+    const page = usePage();
+    const authUser = page.props.auth.user;
+    const eventBus = useEventBus();
 
     const form = useForm({
         project_name: '',
         coverage_segment: '',
-        description: ''
+        description: '',
+        start_date: '',
+        end_date: '',
+        created_by: authUser ? authUser.id : ''
     });
 
     const errors = ref({
         project_name: '',
         coverage_segment: '',
-        description: ''
+        description: '',
+        start_date: '',
+        end_date: ''
     });
 
     const validateForm = () => {
         let valid = true;
 
-        errors.value = { project_name: '', coverage_segment: '', description: '' };
+        errors.value = { project_name: '', coverage_segment: '', description: '', start_date: '', end_date: '' };
 
         if (!form.project_name.trim()) {
             errors.value.project_name = "Project Name is required.";
@@ -35,6 +46,16 @@
             valid = false;
         }
 
+        if (!form.start_date) {
+            errors.value.start_date = "Start Date is required.";
+            valid = false;
+        }
+
+        if (!form.end_date) {
+            errors.value.end_date = "End Date is required.";
+            valid = false;
+        }
+
         return valid;
     };
 
@@ -43,7 +64,10 @@
 
         form.post(route('projects.store'), {
             onSuccess: () => {
+                eventBus.emit("projectCreated");
                 closeModal();
+                form.reset();
+                emitRefresh('refreshTable');
             },
             onError: (err) => {
                 errors.value = err;
@@ -115,6 +139,24 @@
                             </div>
 
                             <div class="space-y-2">
+                                <label for="start_date" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">
+                                    Start Date
+                                </label>
+                                <input v-model="form.start_date" id="start_date" type="date"
+                                    class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
+                                <span class="text-red-500 text-sm" v-if="errors.start_date">{{ errors.start_date }}</span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="end_date" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">
+                                    End Date
+                                </label>
+                                <input v-model="form.end_date" id="end_date" type="date"
+                                    class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
+                                <span class="text-red-500 text-sm" v-if="errors.end_date">{{ errors.end_date }}</span>
+                            </div>
+
+                            <div class="space-y-2">
                                 <label for="coverage_segment" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">
                                     Coverage/Segment
                                 </label>
@@ -139,6 +181,7 @@
                                     rows="6" placeholder="Enter project description"></textarea>
                                 <span class="text-red-500 text-sm" v-if="errors.description">{{ errors.description }}</span>
                             </div>
+
                         </div>
                     </div>
 

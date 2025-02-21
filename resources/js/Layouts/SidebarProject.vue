@@ -1,44 +1,67 @@
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
+    import { Link } from '@inertiajs/vue3';
+    import { ref, onMounted } from 'vue';
+    import { useEventBus } from "@/eventBus";
+    import axios from 'axios';
+
+
+    const eventBus = useEventBus();
+    const recentProjects = ref([]);
+
+    onMounted(() => {
+        fetchRecentProjects();
+    });
+
+    const fetchRecentProjects = async () => {
+        try {
+            const response = await axios.get("/projects/recent");
+            recentProjects.value = response.data;
+        } catch (error) {
+            console.error("❌ Error fetching recent projects:", error);
+        }
+    };
+
+    eventBus.on("projectCreated", () => {
+        fetchRecentProjects();
+    });
+
+    onMounted(() => {
+        fetchRecentProjects();
+    });
 
 </script>
 
 <template>
-    <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Projects</h2>
+    <li>
+        <Link
+            :href="route('projects.index')"
+            :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
+                    hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
+                    dark:text-white
+                    ${route().current('projects.index') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-align-justify"><path d="M3 12h18"/><path d="M3 18h18"/><path d="M3 6h18"/></svg>
+        Projects
+        </Link>
+    </li>
 
-    </div>
 
-    <!-- Recent Projects -->
     <div class="mt-4 space-y-2">
-    <button class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
-        Kanban-Project A
-    </button>
-    <button class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
-        Support 1
-    </button>
-    <button class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
-        Support
-    </button>
-    <button class="flex items-center w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
-        Project A
-    </button>
+        <span class="font-medium text-xs">Recent Projects</span>
+        <ul>
+            <li v-for="project in recentProjects" :key="project.id" class="mb-2">
+                <Link
+                    href="#"
+                    :class="`text-xs flex items-center gap-x-3.5 py-2 px-2.5 text-gray-800 rounded-lg
+                            hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
+                            dark:text-white
+                            `">
+                            <!-- ${route().current('dashboard') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`"> -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-kanban"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><path d="M8 10v4"/><path d="M12 10v2"/><path d="M16 10v6"/></svg>
+                            {{ project.project_name }}
+                </Link>
+            </li>
+        </ul>
     </div>
-
-    <!-- View All Projects -->
-    <!-- <button class="mt-4 w-full px-3 py-2 text-sm font-semibold text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-blue-400">
-    View all projects
-    </button>
-     -->
-    <Link
-        :href="route('projects.index')"
-        :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
-                hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
-                dark:text-white
-                ${route().current('projects.index') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
-        View all projects
-    </Link>
-
 
 </template>

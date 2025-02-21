@@ -15,5 +15,9 @@ class Project extends Model
         'project_name',
         'coverage_segment',
         'description',
+        'start_date',
+        'end_date',
+        'created_by'
+
     ];
 }

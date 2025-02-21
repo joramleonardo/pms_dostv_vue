@@ -82,15 +82,18 @@
                         fetchUsers();
                     }
                 });
+            }
+        };
 
-                // router.put(route("users.deactivate", id), {
+        const activateUser = (id) => {
+            if (confirm("Are you sure you want to activate this user?" + id)) {
 
-                //     onSuccess: (data) => {
-                //         console.log(data);
-                //         console.log("ACCOUNT SUCCESSFULLY DEACTIVATED!!");
-                //         fetchUsers();
-                //     }
-                // });
+                axios.put(route("users.activate", id)).then(res=>{
+                    if (res.data.status === "activated"){
+                        alert(res.data.message);
+                        fetchUsers();
+                    }
+                });
             }
         };
 
@@ -106,18 +109,6 @@
         //         });
         //     }
         // };
-
-        const activateUser = (id) => {
-            if (confirm("Are you sure you want to activate this user?" + id)) {
-
-                axios.put(route("users.activate", id)).then(res=>{
-                    if (res.data.status === "activated"){
-                        alert(res.data.message);
-                        fetchUsers();
-                    }
-                });
-            }
-        };
 
         watch(searchQuery, () => {
             fetchUsers();
@@ -267,10 +258,13 @@
                         </label>
                         <select v-model="editForm.role" class="w-full px-3 py-2 border rounded-lg mb-2">
                             <option value="" disabled>Select a Role</option>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                            <option value="editor">Editor</option>
-                            <option value="viewer">Viewer</option>
+                            <option value="Program Manager">Program Manager</option>
+                            <option value="Editing Supervisor">Editing Supervisor</option>
+                            <option value="Segment Producer">Segment Producer</option>
+                            <option value="Camera Operator">Camera Operator</option>
+                            <option value="Editor">Editor</option>
+                            <option value="Social Media Officer">Social Media Officer</option>
+                            <option value="Admin Staff">Admin Staff</option>
                         </select>
                     </div>
                     <div class="space-y-2">

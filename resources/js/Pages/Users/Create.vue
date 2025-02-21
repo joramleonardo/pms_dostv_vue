@@ -161,10 +161,13 @@
                                 <select v-model="form.role" id="role"
                                     class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
                                     <option value="" disabled>Select a Role</option>
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="editor">Editor</option>
-                                    <option value="viewer">Viewer</option>
+                                    <option value="Program Manager">Program Manager</option>
+                                    <option value="Editing Supervisor">Editing Supervisor</option>
+                                    <option value="Segment Producer">Segment Producer</option>
+                                    <option value="Camera Operator">Camera Operator</option>
+                                    <option value="Editor">Editor</option>
+                                    <option value="Social Media Officer">Social Media Officer</option>
+                                    <option value="Admin Staff">Admin Staff</option>
                                 </select>
                                 <span class="text-red-500 text-sm" v-if="errors.role">{{ errors.role }}</span>
                             </div>
@@ -211,44 +214,4 @@
         </div>
     </div>
 
-        <!-- <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
-            <h3 class="text-lg font-semibold mb-4">Create User</h3>
-
-            <form @submit.prevent="createUser">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Name</label>
-                    <input v-model="form.name" type="text" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Username</label>
-                    <input v-model="form.username" type="text" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Role</label>
-                    <select v-model="form.role" class="w-full px-3 py-2 border rounded-lg">
-                        <option value="admin">Admin</option>
-                        <option value="user">User</option>
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input v-model="form.email" type="email" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input v-model="form.password" type="password" class="w-full px-3 py-2 border rounded-lg">
-                </div>
-
-                <div class="flex justify-end space-x-2">
-                    <button @click="$emit('close')" type="button" class="bg-gray-300 px-4 py-2 rounded-lg">Cancel</button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                        Create
-                    </button>
-                </div>
-            </form>
-        </div> -->
 </template>

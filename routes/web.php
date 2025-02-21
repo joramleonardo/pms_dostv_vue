@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit'); // Show edit project form
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy'); // Delete project
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update'); // Update project
+    Route::get('/projects/recent', [ProjectController::class, 'getRecentProjects'])->name('projects.recent');
+
 
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

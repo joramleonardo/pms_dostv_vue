@@ -101,7 +101,7 @@
                             </h2>
                             <div class="flex gap-x-2 items-center">
                                 <SearchFilter v-model="searchQuery" class="w-64" />
-                                <CreateProject class="ml-auto" />
+                                <CreateProject  @refreshTable="fetchProjects()"/>
                             </div>
                         </div>
 
