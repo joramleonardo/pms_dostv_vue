@@ -17,7 +17,8 @@ class Project extends Model
         'description',
         'start_date',
         'end_date',
-        'created_by'
+        'created_by',
+        'project_status'
 
     ];
 }
