@@ -1,4 +1,5 @@
 <script setup>
+    import 'preline';
     import { ref, watch } from 'vue';
 
     defineProps({

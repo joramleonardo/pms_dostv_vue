@@ -1,8 +1,20 @@
 <?php
 
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
+
+use App\Http\Controllers\ViewSingleProjectController;
+use App\Http\Controllers\OverviewController;
+use App\Http\Controllers\ListController;
+use App\Http\Controllers\TimelineController;
+use App\Http\Controllers\KanbanController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\AttachmentsController;
+
+use App\Http\Controllers\TaskController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,6 +29,7 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -48,6 +61,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy'); // Delete project
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update'); // Update project
     Route::get('/projects/recent', [ProjectController::class, 'getRecentProjects'])->name('projects.recent');
+
+    // Route::get('/projects/title', [ViewSingleProjectController::class, 'index'])->name('viewsingleproject.index');
+    Route::get('/projects/title/overview', [OverviewController::class, 'index'])->name('overview.index');
+    Route::get('/projects/title/list', [ListController::class, 'index'])->name('list.index');
+    Route::get('/projects/title/timeline', [TimelineController::class, 'index'])->name('timeline.index');
+    Route::get('/projects/title/kanban', [KanbanController::class, 'index'])->name('kanban.index');
+    Route::get('/projects/title/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/projects/title/attachments', [AttachmentsController::class, 'index'])->name('attachments.index');
+
+
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+
+
+
+
 
 
 

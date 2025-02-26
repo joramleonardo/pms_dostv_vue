@@ -1,14 +1,15 @@
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
+        import 'preline';
+        import { ref, onMounted } from 'vue';
+        import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+        import Dropdown from '@/Components/Dropdown.vue';
+        import DropdownLink from '@/Components/DropdownLink.vue';
 
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
-import Sidebar from './Sidebar.vue';
-import SidebarProject from './SidebarProject.vue';
+        import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+        import { Link } from '@inertiajs/vue3';
+        import Sidebar from './Sidebar.vue';
+        import SidebarProject from './SidebarProject.vue';
 
 </script>
 
@@ -85,7 +86,7 @@ import SidebarProject from './SidebarProject.vue';
                     :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
                             hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                             dark:text-white
-                            ${route().current('dashboard') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
+                            ${route().current('dashboard') ? 'bg-cyan-600 text-white hover:bg-cyan-700 hover:text-white ' : ''}`">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
                 Dashboard
                 </Link>
@@ -97,7 +98,7 @@ import SidebarProject from './SidebarProject.vue';
                     :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
                             hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                             dark:text-white
-                            ${route().current('users.index') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
+                            ${route().current('users.index') ? 'bg-cyan-600 text-white hover:bg-cyan-700 hover:text-white ' : ''}`">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
                 Users
                 </Link>

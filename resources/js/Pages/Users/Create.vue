@@ -104,7 +104,7 @@
 
 <template>
     <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
-                                bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50
+                                 bg-gray-800 text-white hover:bg-cyan-600 focus:outline-none focus:bg-cyan-600 disabled:opacity-50
                                 disabled:pointer-events-none" aria-haspopup="dialog" aria-expanded="false" aria-controls="create-modal"
                                 data-hs-overlay="#create-modal">
         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"

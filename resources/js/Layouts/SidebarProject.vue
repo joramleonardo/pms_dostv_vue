@@ -1,5 +1,6 @@
 
 <script setup>
+    import 'preline';
     import { Link } from '@inertiajs/vue3';
     import { ref, onMounted } from 'vue';
     import { useEventBus } from "@/eventBus";
@@ -39,7 +40,7 @@
             :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
                     hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                     dark:text-white
-                    ${route().current('projects.index') ? 'bg-gray-700 text-white hover:bg-gray-600 ' : ''}`">
+                    ${route().current('projects.index') ? 'bg-cyan-600 text-white hover:bg-cyan-700 hover:text-white ' : ''}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-align-justify"><path d="M3 12h18"/><path d="M3 18h18"/><path d="M3 6h18"/></svg>
         Projects
         </Link>
@@ -51,7 +52,7 @@
         <ul>
             <li v-for="project in recentProjects" :key="project.id" class="mb-2">
                 <Link
-                    href="#"
+                    :href="route('overview.index')"
                     :class="`text-xs flex items-center gap-x-3.5 py-2 px-2.5 text-gray-800 rounded-lg
                             hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
                             dark:text-white

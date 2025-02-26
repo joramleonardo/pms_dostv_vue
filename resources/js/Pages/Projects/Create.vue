@@ -1,7 +1,7 @@
 <script setup>
+    import 'preline';
     import { ref, onMounted, defineEmits  } from 'vue';
     import { useForm, usePage } from '@inertiajs/vue3';
-    import 'preline';
     import { useEventBus } from "@/eventBus";
 
     const emitRefresh = defineEmits(['refreshTable']);
@@ -15,7 +15,8 @@
         description: '',
         start_date: '',
         end_date: '',
-        created_by: authUser ? authUser.id : ''
+        created_by: authUser ? authUser.id : '',
+        project_status: "pending" // Default value
     });
 
     const errors = ref({
@@ -23,7 +24,8 @@
         coverage_segment: '',
         description: '',
         start_date: '',
-        end_date: ''
+        end_date: '',
+        project_status: ''
     });
 
     const validateForm = () => {
@@ -98,7 +100,7 @@
 
 <template>
     <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
-                                bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50
+                            bg-gray-800 text-white hover:bg-cyan-600 focus:outline-none focus:bg-cyan-600 disabled:opacity-50
                                 disabled:pointer-events-none" aria-haspopup="dialog" aria-expanded="false" aria-controls="modal-create-project"
                                 data-hs-overlay="#modal-create-project">
         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"

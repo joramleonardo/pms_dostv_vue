@@ -1,11 +1,17 @@
 
 
 <script setup>
-        import { ref, onMounted, defineProps, watch } from 'vue';
-        import { useForm, router, Head  } from '@inertiajs/vue3';
+        import 'preline';
+        import { ref, onMounted, defineProps, watch, defineEmits   } from 'vue';
+        import { useForm, router, Head, Link  } from '@inertiajs/vue3';
+        import { useEventBus } from "@/eventBus";
+
         import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
         import CreateProject from '@/Pages/Projects/Create.vue';
         import SearchFilter from '@/Pages/Projects/SearchFilter.vue';
+
+
+        const eventBus = useEventBus();
 
         const props = defineProps({
             projects: Object
@@ -42,22 +48,10 @@
                 onSuccess: () => {
                     closeEditModal();
                     fetchProjects(); // Reloads the updated list after update
+                    eventBus.emit("projectCreated");
                 },
                 onError: (errors) => {
                     console.error("Update failed:", errors);
-                }
-            });
-        };
-
-        const fetchProjects = (page = 1) => {
-            router.get(route('projects.index'), {
-                search: searchQuery.value,
-                page: page // Ensures it fetches the correct paginated data
-            }, {
-                preserveScroll: true,
-                preserveState: true,
-                onSuccess: (response) => {
-                    projects.value = response.props.projects; // Updates projects data
                 }
             });
         };
@@ -71,8 +65,23 @@
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
+                    fetchProjects(); // Reloads the updated list after update
+                    eventBus.emit("projectCreated");
                     alert("Project deleted successfully");
                 },
+            });
+        };
+
+        const fetchProjects = (page = 1) => {
+            router.get(route('projects.index'), {
+                search: searchQuery.value,
+                page: page // Ensures it fetches the correct paginated data
+            }, {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: (response) => {
+                    projects.value = response.props.projects; // Updates projects data
+                }
             });
         };
 
@@ -93,7 +102,8 @@
 
         <div class="w-full lg:ps-64">
             <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8"> -->
+                <div class="mx-auto sm:px-6 lg:px-8">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div class="px-6 py-4 flex justify-between items-center border-b border-gray-200 dark:border-neutral-700">
                             <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
@@ -113,7 +123,10 @@
                                         <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">#</th>
                                         <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Project Name</th>
                                         <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Coverage/Segment</th>
-                                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Description</th>
+                                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Start Date</th>
+                                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">End Date</th>
+                                        <!-- <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Description</th> -->
                                         <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
                                     </tr>
                                 </thead>
@@ -123,9 +136,50 @@
                                     </tr>
                                     <tr v-else v-for="(project, index) in projects.data" :key="project.id" class="border-b hover:bg-gray-50">
                                         <td class="py-3 px-4 text-sm text-gray-700">{{ index + 1 }}</td>
-                                        <td class="py-3 px-4 text-sm text-gray-900">{{ project.project_name }}</td>
+                                        <td class="py-3 px-4">
+                                            <!-- <a
+                                                class="text-teal-500 underline decoration-teal-500 hover:opacity-80
+                                                focus:outline-none focus:opacity-80"
+                                                href="#">
+                                                {{ project.project_name }}
+                                            </a> -->
+
+                                            <Link
+                                                :href="route('overview.index')"
+                                                class="text-teal-500 underline decoration-teal-500 hover:opacity-80
+                                                focus:outline-none focus:opacity-80">
+                                                {{ project.project_name }}
+                                            </Link>
+
+                                        </td>
                                         <td class="py-3 px-4 text-sm text-gray-700">{{ project.coverage_segment }}</td>
-                                        <td class="py-3 px-4 text-sm text-gray-700">{{ project.description }}</td>
+                                        <td class="py-3 px-4">
+                                            <span v-if="project.project_status === 'pending'"
+                                                class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500">
+                                                <svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                                </svg>
+                                                Pending
+                                            </span>
+                                            <span v-if="project.project_status === 'in progress'"
+                                            class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500">
+                                                <svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                                </svg>
+                                                In Progress
+                                            </span>
+                                            <span v-if="project.project_status === 'completed'"
+                                            class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-500">
+                                                <svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                                </svg>
+                                                Completed
+                                            </span>
+                                            <!-- {{ project.project_status }} -->
+                                        </td>
+                                        <td class="py-3 px-4 text-sm text-gray-700">{{ project.start_date }}</td>
+                                        <td class="py-3 px-4 text-sm text-gray-700">{{ project.end_date }}</td>
+                                        <!-- <td class="py-3 px-4 text-sm text-gray-700">{{ project.description }}</td> -->
                                         <td class="py-3 px-4">
                                             <button  @click="openEditModal(project)" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 mr-2">
                                                 Edit
