@@ -12,23 +12,12 @@ use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\KanbanController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\AttachmentsController;
-
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\SubtaskController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 
 Route::get('/', function () {
@@ -45,48 +34,60 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
+    //PROFILE SETTINGS
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    //DASHBOARD MANAGEMENT
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/members', [App\Http\Controllers\MembersController::class, 'index'])->name('members');
-    Route::get('/project', [App\Http\Controllers\ProjectViewController::class, 'index'])->name('project-view');
 
-
-    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index'); // Show all projects in a table
-    Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create'); // Show create project form
-    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store'); // Store new project
-    Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('projects.edit'); // Show edit project form
-    Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy'); // Delete project
-    Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update'); // Update project
-    Route::get('/projects/recent', [ProjectController::class, 'getRecentProjects'])->name('projects.recent');
-
-    // Route::get('/projects/title', [ViewSingleProjectController::class, 'index'])->name('viewsingleproject.index');
-    Route::get('/projects/title/overview', [OverviewController::class, 'index'])->name('overview.index');
-    Route::get('/projects/title/list', [ListController::class, 'index'])->name('list.index');
-    Route::get('/projects/title/timeline', [TimelineController::class, 'index'])->name('timeline.index');
-    Route::get('/projects/title/kanban', [KanbanController::class, 'index'])->name('kanban.index');
-    Route::get('/projects/title/calendar', [CalendarController::class, 'index'])->name('calendar.index');
-    Route::get('/projects/title/attachments', [AttachmentsController::class, 'index'])->name('attachments.index');
-
-
-    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-
-
-
-
-
-
-
+    //USERS MANAGEMENT
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
-
     Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::put('/users/{id}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
     Route::put('/users/{id}/activate', [UserController::class, 'activate'])->name('users.activate');
 
+    //PROJECT MANAGEMENT
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects-create', [ProjectController::class, 'create'])->name('projects.create'); // Show create project form
+    Route::post('/projects-store', [ProjectController::class, 'store'])->name('projects.store'); // Store new project
+    Route::get('/projects-edit/{id}', [ProjectController::class, 'edit'])->name('projects.edit'); // Show edit project form
+    Route::delete('/projects-delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy'); // Delete project
+    Route::put('/projects-update/{id}', [ProjectController::class, 'update'])->name('projects.update'); // Update project
+    Route::get('/projects-recent', [ProjectController::class, 'getRecentProjects'])->name('projects.recent');
+    Route::get('/get-projects', [ProjectController::class, 'getProjects'])->name('projects.get-projects');
+    Route::get('/get-assigned-projects', [ProjectController::class, 'getAssignedProjects'])->name('projects.get-assigned-projects');
+
+
+
+    //PROJECT SECTION MANAGEMENT
+    Route::get('/projects-overview/{id}', [OverviewController::class, 'index'])->name('overview.index');
+    Route::get('/projects-list/{id}', [ListController::class, 'index'])->name('list.index');
+    Route::get('/projects-timeline/{id}', [TimelineController::class, 'index'])->name('timeline.index');
+    Route::get('/projects-kanban/{id}', [KanbanController::class, 'index'])->name('kanban.index');
+    Route::get('/projects-calendar/{id}', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/projects-attachments/{id}', [AttachmentsController::class, 'index'])->name('attachments.index');
+
+
+
+    // TASK MANAGEMENT
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::get('/tasks-get-users', [TaskController::class, 'getUsers'])->name('tasks.get-users');
+    Route::delete('/tasks-delete/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); // Add delete route
+    Route::get('/tasks/{task}/subtasks', [TaskController::class, 'getSubtasks'])->name('tasks.subtasks');
+    Route::get('/tasks/subtask-counts', [TaskController::class, 'getSubtaskCounts']);
+
+
+
+
+    //SUBTASKS MANAGEMENT
+    Route::post('/subtasks', [SubtaskController::class, 'store'])->name('subtasks.store');
+    Route::delete('/subtasks/{subtask}', [SubtaskController::class, 'destroy'])->name('subtasks.destroy');
+    Route::put('/subtasks/{subtask}/update-status', [SubtaskController::class, 'updateStatus'])->name('subtasks.update-status');
 
 
 

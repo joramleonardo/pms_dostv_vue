@@ -11,7 +11,7 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
-        'node_modules/preline/dist/*.js',
+        './node_modules/preline/dist/*.js',  // ✅ This is the correct path
         './src/**/*.{html,js}',
     ],
     theme: {

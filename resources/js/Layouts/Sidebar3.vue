@@ -53,18 +53,6 @@
                         Dashboard
                         </Link>
                     </li>
-                    <!-- Members -->
-                    <li>
-                        <Link
-                            :href="route('users.index')"
-                            :class="`flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg
-                                    hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:bg-neutral-500
-                                    dark:text-white
-                                    ${route().current('users.index') ? 'bg-cyan-600 text-white hover:bg-cyan-700 hover:text-white ' : ''}`">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
-                        Users
-                        </Link>
-                    </li>
                     <hr style="margin: 15px;">
 
                     <SidebarProject />

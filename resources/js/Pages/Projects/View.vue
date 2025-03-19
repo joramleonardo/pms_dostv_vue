@@ -75,7 +75,7 @@
 
 <script setup>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import CreateProject from '@/Pages/Project/Create.vue';
+    import CreateProject from '@/Pages/Projects/Create.vue';
 
     import {  Head, Link, useForm  } from '@inertiajs/vue3';
     import { ref, onMounted } from 'vue';

@@ -18,7 +18,10 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "@preline/overlay": "^2.5.2",
-        "preline": "^2.7.0"
+        "@floating-ui/dom": "^1.6.13",
+        "@preline/overlay": "^2.6.0",
+        "@preline/tooltip": "^3.0.0",
+        "preline": "^2.7.0",
+        "ziggy-js": "^2.5.2"
     }
 }

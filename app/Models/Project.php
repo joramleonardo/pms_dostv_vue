@@ -21,4 +21,11 @@ class Project extends Model
         'project_status'
 
     ];
+
+
+    // ✅ Define the relationship between Project and Task
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'project_id'); // Ensure project_id is the correct foreign key
+    }
 }

@@ -161,13 +161,15 @@
                                 <select v-model="form.role" id="role"
                                     class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
                                     <option value="" disabled>Select a Role</option>
+                                    <!-- <option value="Supervising Producer">Supervising Producer</option> -->
                                     <option value="Program Manager">Program Manager</option>
                                     <option value="Editing Supervisor">Editing Supervisor</option>
-                                    <option value="Segment Producer">Segment Producer</option>
-                                    <option value="Camera Operator">Camera Operator</option>
-                                    <option value="Editor">Editor</option>
-                                    <option value="Social Media Officer">Social Media Officer</option>
+                                    <option value="Assoc Producer">Assoc Producer</option>
+                                    <option value="Marketing Staff">Marketing Staff</option>
                                     <option value="Admin Staff">Admin Staff</option>
+                                    <option value="Segment Producer">Segment Producer</option>
+                                    <option value="Camera Operator">Camera Operator/Editor</option>
+                                    <option value="Socmed Admin">Socmed Admin</option>
                                 </select>
                                 <span class="text-red-500 text-sm" v-if="errors.role">{{ errors.role }}</span>
                             </div>
