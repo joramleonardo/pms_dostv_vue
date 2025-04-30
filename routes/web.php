@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects-edit/{id}', [ProjectController::class, 'edit'])->name('projects.edit'); // Show edit project form
     Route::delete('/projects-delete/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy'); // Delete project
     Route::put('/projects-update/{id}', [ProjectController::class, 'update'])->name('projects.update'); // Update project
+
     Route::get('/projects-recent', [ProjectController::class, 'getRecentProjects'])->name('projects.recent');
     Route::get('/get-projects', [ProjectController::class, 'getProjects'])->name('projects.get-projects');
     Route::get('/get-assigned-projects', [ProjectController::class, 'getAssignedProjects'])->name('projects.get-assigned-projects');
@@ -76,10 +77,15 @@ Route::middleware('auth')->group(function () {
 
     // TASK MANAGEMENT
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::get('/tasks-get-users', [TaskController::class, 'getUsers'])->name('tasks.get-users');
     Route::delete('/tasks-delete/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); // Add delete route
     Route::get('/tasks/{task}/subtasks', [TaskController::class, 'getSubtasks'])->name('tasks.subtasks');
     Route::get('/tasks/subtask-counts', [TaskController::class, 'getSubtaskCounts']);
+
+
+    Route::get('/tasks-get-users', [TaskController::class, 'getUsers'])->name('tasks.get-users');
+    Route::get('/tasks-get-prod-users', [TaskController::class, 'getUsers_forProdMngr'])->name('tasks.get-prod-users');
+    Route::get('/tasks-get-assoc-users', [TaskController::class, 'getUsers_forAssocProd'])->name('tasks.get-assoc-users');
+    Route::get('/tasks-get-editing-users', [TaskController::class, 'getUsers_forEditingSprvsr'])->name('tasks.get-editing-users');
 
 
 

@@ -132,24 +132,26 @@ class ProjectController extends Controller
         ]);
     }
 
+
     public function update(Request $request, $id)
-    {
-        $project = Project::findOrFail($id);
+{
+    $project = Project::findOrFail($id);
 
-        $request->validate([
-            'project_name' => 'required|string|max:255',
-            'coverage_segment' => 'required|string|max:255',
-            'description' => 'nullable|string'
-        ]);
+    $validated = $request->validate([
+        'project_name' => 'nullable|string|max:255',
+        'coverage_segment' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+        'project_status' => 'nullable|in:pending,in_progress,completed',
+    ]);
 
-        $project->update([
-            'project_name' => $request->project_name,
-            'coverage_segment' => $request->coverage_segment,
-            'description' => $request->description
-        ]);
+    $project->update($validated);
 
-        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
-    }
+    return response()->json(['message' => 'Project updated.']);
+}
+
+
 
     public function destroy($id): RedirectResponse
     {

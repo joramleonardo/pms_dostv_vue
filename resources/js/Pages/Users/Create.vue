@@ -47,10 +47,7 @@
             valid = false;
         }
 
-        if (!form.email.trim()) {
-            errors.value.email = "Email is required.";
-            valid = false;
-        }
+
 
         if (!form.password.trim()) {
             errors.value.password = "Password is required.";
@@ -104,7 +101,7 @@
 
 <template>
     <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent
-                                 bg-gray-800 text-white hover:bg-cyan-600 focus:outline-none focus:bg-cyan-600 disabled:opacity-50
+                                 bg-cyan-600 text-white hover:bg-cyan-700 focus:outline-none focus:bg-cyan-600 disabled:opacity-50
                                 disabled:pointer-events-none" aria-haspopup="dialog" aria-expanded="false" aria-controls="create-modal"
                                 data-hs-overlay="#create-modal">
         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -170,11 +167,14 @@
                                     <option value="Segment Producer">Segment Producer</option>
                                     <option value="Camera Operator">Camera Operator/Editor</option>
                                     <option value="Socmed Admin">Socmed Admin</option>
+                                    <option value="Researcher">Researcher/Coordinator </option>
+                                    <option value="Archivist">Archivist</option>
+                                    <option value="Tech Support">DOP/ Tech Support</option>
                                 </select>
                                 <span class="text-red-500 text-sm" v-if="errors.role">{{ errors.role }}</span>
                             </div>
 
-                            <div class="space-y-2">
+                            <!-- <div class="space-y-2">
                                 <label for="email" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">
                                     Email
                                 </label>
@@ -182,7 +182,7 @@
                                     class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
                                     placeholder="Enter email">
                                 <span class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</span>
-                            </div>
+                            </div> -->
 
                             <div class="space-y-2">
                                 <label for="password" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">

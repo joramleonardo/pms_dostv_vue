@@ -8,6 +8,7 @@
     const page = usePage();
     const authUser = page.props.auth.user;
     const eventBus = useEventBus();
+    const showAlert = ref(false);
 
     const form = useForm({
         project_name: '',
@@ -78,6 +79,14 @@
                 closeModal();
                 form.reset();
                 emitRefresh('refreshTable');
+                // ✅ Show alert after successful update
+                showAlert.value = true;
+
+                // ✅ Hide alert after 3 seconds
+                setTimeout(() => {
+                    showAlert.value = false;
+                }, 3000);
+
             },
             onError: (err) => {
                 errors.value = err;
@@ -107,6 +116,19 @@
 
 
 <template>
+    <!-- EDIT ALERT -->
+    <div v-if="showAlert" class="fixed bottom-5 right-5 z-50 w-[400px]">
+        <div class="flex items-center p-6 text-lg text-green-900 rounded-lg bg-green-200 shadow-2xl dark:bg-green-800 dark:text-green-100" role="alert">
+            <svg class="w-6 h-6 me-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM9 5a1 1 0 1 1 2 0v4a1 1 0 0 1-2 0V5Zm1 8.75a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/>
+            </svg>
+            <div>
+                <span class="font-bold">Success!</span> <br>
+                <span class="text-base">Project created successfully.</span>
+            </div>
+        </div>
+    </div>
+
 
 
     <!-- Show the button only if the user is a Program Manager -->
@@ -135,7 +157,7 @@
             <div class="flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto dark:bg-neutral-800 dark:border-neutral-700 dark:shadow-neutral-700/70">
                 <div class="flex justify-between items-center py-3 px-4 border-b dark:border-neutral-700">
                     <h3 id="modal-create-project-label" class="font-bold text-gray-800 dark:text-white">
-                    Create new project
+                        Project Information
                     </h3>
                     <button type="button" class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600" aria-label="Close" data-hs-overlay="#modal-create-project">
                     <span class="sr-only">Close</span>
@@ -162,7 +184,7 @@
 
                                 <div class="space-y-2">
                                     <label for="start_date" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">
-                                        Start Date
+                                        Project Duration Start
                                     </label>
                                     <input v-model="form.start_date" id="start_date" type="date"
                                         class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
@@ -171,7 +193,7 @@
 
                                 <div class="space-y-2">
                                     <label for="end_date" class="inline-block text-sm font-medium text-gray-800 mt-2.5 dark:text-neutral-200">
-                                        End Date
+                                        Project Duration End
                                     </label>
                                     <input v-model="form.end_date" id="end_date" type="date"
                                         class="py-2 px-3 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">

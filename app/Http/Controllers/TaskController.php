@@ -21,8 +21,8 @@ class TaskController extends Controller
             'assignee_ids.*' => 'exists:users,id',
             'task_status' => 'required|in:new,in_progress,completed',
             'task_due_date' => 'required|date',
-            'task_category' => 'required|in:pre-production,production,post-production',
-            'task_sub_category' => 'required|string|max:255',
+            // 'task_category' => 'required|in:pre-production,production,post-production',
+            // 'task_sub_category' => 'required|string|max:255',
             'project_id' => 'required|exists:projects,id',
 
         ]);
@@ -46,7 +46,50 @@ class TaskController extends Controller
 
     public function getUsers()
     {
+        $allowedRoles = [   'Tech Support',
+                            'Assoc Producer',
+                            'Editing Supervisor',
+                            'Admin Staff',
+                            'Marketing Staff',
+                            'Segment Producer',
+                            'Researcher',
+                            'Camera Operator',
+                            'Socmed Admin',
+                            'Archivist'
+                        ];
+
+        $users = User::where('is_active', 1)
+                    ->whereIn('role', $allowedRoles)
+                    ->get();
+
+        return response()->json($users);
+    }
+
+    public function getUsers_forProdMngr()
+    {
         $allowedRoles = ['Tech Support', 'Assoc Producer', 'Editing Supervisor', 'Admin Staff', 'Marketing Staff'];
+
+        $users = User::where('is_active', 1)
+                    ->whereIn('role', $allowedRoles)
+                    ->get();
+
+        return response()->json($users);
+    }
+
+    public function getUsers_forAssocProd()
+    {
+        $allowedRoles = ['Segment Producer', 'Researcher'];
+
+        $users = User::where('is_active', 1)
+                    ->whereIn('role', $allowedRoles)
+                    ->get();
+
+        return response()->json($users);
+    }
+
+    public function getUsers_forEditingSprvsr()
+    {
+        $allowedRoles = ['Camera Operator', 'Socmed Admin', 'Archivist'];
 
         $users = User::where('is_active', 1)
                     ->whereIn('role', $allowedRoles)

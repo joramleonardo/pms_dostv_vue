@@ -7,18 +7,24 @@
     import ViewSingleProject from '@/Pages/Projects/ViewSingleProject.vue';
     import Modal from '@/Components/Modal.vue';
 
+    const newSubtaskRow = ref({}); // Tracks active input per task
+
     const tasks = computed(() => usePage().props.tasks || []);
     const openSubmenus = ref({});
     const subtaskModal = ref(false);
     const subtasks = ref({});
     const openDropdown = ref(null);
 
+    const page = usePage(); // Access page props
+    const authUser = computed(() => page.props.auth.user); // Get logged-in user
 
+
+    const isDropdownOpen = ref(false);
     const newSubtask = ref({
         task_id: null,
         name: '',
         description: '',
-        assignee_id: null,
+        assignee_id: [],
         status: 'pending'
     });
 
@@ -38,7 +44,35 @@
         }
     };
 
-    onMounted(() => {
+    // Fetch Users for Assignee Dropdown
+    const users = ref([]);
+    const users_prod = ref([]);
+    const users_assoc = ref([]);
+    const users_editing = ref([]);
+
+
+    onMounted(async () => {
+        try {
+            const response = await fetch('/tasks-get-users');
+            const data = await response.json();
+            users.value = data.filter(user => user.role);
+
+            const response1 = await fetch('/tasks-get-prod-users');
+            const data1 = await response1.json();
+            users_prod.value = data1.filter(user => user.role);
+
+            const response2 = await fetch('/tasks-get-editing-users');
+            const data2 = await response2.json();
+            users_editing.value = data2.filter(user => user.role);
+
+            const response3 = await fetch('/tasks-get-assoc-users');
+            const data3 = await response3.json();
+            users_assoc.value = data3.filter(user => user.role);
+
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+
         fetchSubtaskCounts();
         document.addEventListener("click", closeDropdown);
     });
@@ -141,184 +175,194 @@
         }
     };
 
+    const showInlineSubtaskInput = (taskId) => {
+    newSubtask.value = {
+        task_id: taskId,
+        name: '',
+        description: '',
+        assignee_id: [],
+        status: 'pending',
+    };
+    newSubtaskRow.value[taskId] = true;
+};
+
+const cancelInlineSubtask = (taskId) => {
+    newSubtaskRow.value[taskId] = false;
+    newSubtask.value = {};
+};
+
+const submitInlineSubtask = async (taskId) => {
+    if (!newSubtask.value.name.trim()) return alert("Name required");
+
+    router.post('/subtasks', newSubtask.value, {
+        onSuccess: async () => {
+            const response = await fetch(`/tasks/${taskId}/subtasks`);
+            const data = await response.json();
+            subtasks.value[taskId] = data;
+            newSubtaskRow.value[taskId] = false;
+            newSubtask.value = {};
+            fetchSubtaskCounts();
+        },
+        onError: () => alert("Failed to save subtask."),
+    });
+};
 
 </script>
-
 <template>
-
-    <ViewSingleProject :project="usePage().props.project">
-        <div class="w-full lg:ps-64">
-            <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                <div class="mx-auto sm:px-6 lg:px-8">
-
-                    <div class="flex flex-col">
-                        <div class="overflow-x-auto">
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
-
-                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                                        <thead class="bg-gray-50 dark:bg-neutral-800">
-                                            <tr>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Task Name</th>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Assignee</th>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Status</th>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Subtask</th>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Due Date</th>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Category</th>
-                                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Sub-Category</th>
-                                                <th class="px-4 py-3 text-center text-xs font-semibold uppercase">Actions</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody class="divide-y divide-gray-200 dark:divide-neutral-700" v-for="task in tasks" :key="task.id" >
-                                            <tr class="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800">
-                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">
-                                                    {{ task.task_name }}
-                                                    <button @click="toggleSubmenu(task.id)"
-                                                            class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                                                        <svg :class="{'rotate-180': openSubmenus[task.id]}"
-                                                             class="w-5 h-5 transition-transform"
-                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                             xmlns="http://www.w3.org/2000/svg">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                  d="M19 9l-7 7-7-7"></path>
-                                                        </svg>
-                                                    </button>
-                                                </td>
-
-                                                <td class="px-4 py-2">
-                                                    <div class="flex -space-x-2">
-                                                        <div v-for="assignee in task.assignees"
-                                                            :key="assignee.id"
-                                                            class="relative inline-flex items-center justify-center"
-                                                            data-hs-tooltip="true"
-                                                            :title="assignee.name">
-
-                                                            <img class="inline-block size-6 rounded-full ring-2 ring-white dark:ring-neutral-900"
-                                                                :src="'https://ui-avatars.com/api/?name=' + assignee.name + '&background=random'"
-                                                                :alt="assignee.name">
-                                                        </div>
-                                                    </div>
-                                                </td>
-
-                                                <td class="px-4 py-2">
-                                                    <span :class="{
-                                                        'bg-green-100 text-green-800': task.task_status === 'completed',
-                                                        'bg-yellow-100 text-yellow-800': task.task_status === 'in_progress',
-                                                        'bg-gray-100 text-gray-800': task.task_status === 'new'
-                                                    }" class="px-2 py-1 text-xs font-semibold rounded-lg">
-                                                        {{ task.task_status.replace('_', ' ').toUpperCase() }}
-                                                    </span>
-                                                </td>
-
-                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">
-                                                    {{ taskSubtaskCounts[task.id]?.completed || 0 }} / {{ taskSubtaskCounts[task.id]?.total || 0 }}
-                                                </td>
-                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ task.task_due_date }}</td>
-                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ task.task_category }}</td>
-                                                <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ task.task_sub_category }}</td>
-
-                                                <td class="px-4 py-2 text-center">
-                                                    <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                                                        Edit
-                                                    </button>
-
-                                                    <button @click="deleteTask(task.id)"
-                                                                class="ml-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                                                        Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
-
-                                            <tr v-if="openSubmenus[task.id]" class="bg-gray-100 dark:bg-neutral-800">
-                                                <td colspan="7" class="px-4 py-3 text-sm text-gray-700 dark:text-white">
-                                                    <div v-if="subtasks[task.id] && subtasks[task.id].length">
-                                                        <h3 class="font-semibold">Subtasks:</h3>
-                                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 rounded-md mt-2">
-                                                            <thead class="bg-gray-50 dark:bg-neutral-800">
-                                                                <tr>
-                                                                    <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Subtask Name</th>
-                                                                    <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Assignee</th>
-                                                                    <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Status</th>
-                                                                    <th class="px-4 py-3 text-center text-xs font-semibold uppercase">Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                                                                <tr v-for="subtask in subtasks[task.id]" :key="subtask.id" class="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800">
-                                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ subtask.name }}</td>
-                                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ subtask.assignee?.name || 'Unassigned' }}</td>
-                                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white text-center">
-                                                                        <div class="relative  mx-auto">
-                                                                            <button @click="toggleDropdown(subtask.id)"
-                                                                                :class="{
-                                                                                    'bg-blue-500 text-white hover:bg-blue-400': subtask.status === 'pending',
-                                                                                    'bg-orange-500 text-white hover:bg-orange-400': subtask.status === 'in_progress',
-                                                                                    'bg-green-500 text-white hover:bg-green-400': subtask.status === 'completed'
-                                                                                }"
-                                                                                class="px-3 py-2 text-xs font-semibold rounded-lg w-full text-center focus:outline-none"
-                                                                            >
-                                                                                {{ subtask.status.replace('_', ' ').toUpperCase() }}
-                                                                            </button>
-                                                                            <div v-if="openDropdown === subtask.id" ref="dropdownMenu"
-                                                                                class="absolute left-1/2 transform -translate-x-1/2 mt-2 bg-white shadow-md border rounded-lg z-10 w-40"
-                                                                                @click.stop>
-                                                                                <ul>
-                                                                                    <li v-for="option in statusOptions"
-                                                                                        :key="option.value"
-                                                                                        @click="updateSubtaskStatus(subtask, option.value)"
-                                                                                        :class="option.class"
-                                                                                        class="cursor-pointer px-4 py-2 hover:opacity-75 text-center"
-                                                                                    >
-                                                                                        {{ option.label }}
-                                                                                    </li>
-                                                                                </ul>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td class="px-4 py-2 text-center">
-                                                                        <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                                                                            Edit
-                                                                        </button>
-
-                                                                        <button class="ml-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                                                                            Delete
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <button @click="openSubtaskModal(task.id)" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                                        Add Subtask
-                                                    </button>
-
-                                                    <Modal :show="subtaskModal" @close="closeSubtaskModal">
-                                                        <div class="p-6 ">
-                                                            <h2 class="text-lg font-medium text-gray-900">Add Subtask</h2>
-                                                            <input v-model="newSubtask.name" type="text" placeholder="Subtask Name" class="border p-2 rounded w-full" />
-                                                            <textarea v-model="newSubtask.description" placeholder="Description" class="border p-2 rounded w-full mt-2"></textarea>
-                                                            <button @click="saveSubtask" class="px-4 py-2 bg-blue-500 text-white rounded mt-4">Save</button>
-                                                        </div>
-                                                    </Modal>
-                                                </td>
-                                            </tr>
-
-
-
-                                        </tbody>
-                                    </table>
-
-                                    <div class="px-6 py-4 border-t border-gray-200 dark:border-neutral-700">
-                                        <p class="text-sm text-gray-600 dark:text-neutral-400">
-                                            Showing {{ tasks.length }} tasks
-                                        </p>
-                                    </div>
-                                </div>
+  <ViewSingleProject :project="usePage().props.project">
+    <div class="w-full lg:ps-64">
+      <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div class="mx-auto sm:px-6 lg:px-8">
+          <div class="flex flex-col">
+            <div class="overflow-x-auto">
+              <div class="min-w-full inline-block align-middle">
+                <div
+                  class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-neutral-900 dark:border-neutral-700"
+                >
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                    <thead class="bg-gray-50 dark:bg-neutral-800">
+                      <tr>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Task Name</th>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Assignee</th>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Status</th>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Subtask</th>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Due Date</th>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Category</th>
+                        <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Sub-Category</th>
+                        <th v-if="authUser?.role === 'Program Manager'" class="px-4 py-3 text-center text-xs font-semibold uppercase">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody v-for="task in tasks" :key="task.id" class="divide-y divide-gray-200 dark:divide-neutral-700">
+                      <!-- Main task row -->
+                      <tr class="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">
+                          {{ task.task_name }}
+                          <button @click="toggleSubmenu(task.id)" class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <svg :class="{ 'rotate-180': openSubmenus[task.id] }" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </td>
+                        <td class="px-4 py-2">
+                          <div class="flex -space-x-2">
+                            <div v-for="assignee in task.assignees" :key="assignee.id" class="relative inline-flex items-center justify-center" :title="assignee.name">
+                              <img :src="'https://ui-avatars.com/api/?name=' + assignee.name + '&background=random'" :alt="assignee.name" class="inline-block size-6 rounded-full ring-2 ring-white dark:ring-neutral-900" />
                             </div>
-                        </div>
-                    </div>
+                          </div>
+                        </td>
+                        <td class="px-4 py-2">
+                          <span :class="{
+                              'bg-green-100 text-green-800': task.task_status === 'completed',
+                              'bg-yellow-100 text-yellow-800': task.task_status === 'in_progress',
+                              'bg-gray-100 text-gray-800': task.task_status === 'new'
+                            }" class="px-2 py-1 text-xs font-semibold rounded-lg">
+                            {{ task.task_status.replace('_', ' ').toUpperCase() }}
+                          </span>
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">
+                          {{ taskSubtaskCounts[task.id]?.completed || 0 }} / {{ taskSubtaskCounts[task.id]?.total || 0 }}
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ task.task_due_date }}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ task.task_category }}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">{{ task.task_sub_category }}</td>
+                        <td v-if="['Program Manager', 'Editing Supervisor', 'Assoc Producer'].includes(authUser.role)" class="px-4 py-2 text-center">
+                          <button class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 opacity-50 cursor-not-allowed">Edit</button>
+                          <button class="ml-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 opacity-50 cursor-not-allowed">Delete</button>
+                        </td>
+                      </tr>
+
+                      <!-- Subtasks list row -->
+                      <tr v-if="openSubmenus[task.id]" class="bg-gray-100 dark:bg-neutral-800">
+                        <td colspan="8" class="px-4 py-3 text-sm text-gray-700 dark:text-white">
+                          <h3 class="font-semibold mb-2">Subtasks:</h3>
+                          <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700 rounded-md">
+                            <thead class="bg-gray-50 dark:bg-neutral-800">
+                              <tr>
+                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Subtask Name</th>
+                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Assignee</th>
+                                <th class="px-4 py-3 text-start text-xs font-semibold uppercase">Status</th>
+                                <th class="px-4 py-3 text-center text-xs font-semibold uppercase">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="subtask in subtasks[task.id]" :key="subtask.id" class="bg-white dark:bg-neutral-900">
+                                <td class="px-4 py-2">{{ subtask.name }}</td>
+                                <td class="px-4 py-2">{{ subtask.assignee?.name || 'Unassigned' }}</td>
+                                <td class="px-4 py-2 text-center">
+                                  <span :class="{
+                                      'bg-blue-500 text-white': subtask.status === 'pending',
+                                      'bg-orange-500 text-white': subtask.status === 'in_progress',
+                                      'bg-green-500 text-white': subtask.status === 'completed'
+                                    }" class="text-xs font-semibold px-3 py-1 rounded-lg">
+                                    {{ subtask.status.replace('_', ' ').toUpperCase() }}
+                                  </span>
+                                </td>
+                                <td class="px-4 py-2 text-center text-gray-400 text-sm italic">—</td>
+                              </tr>
+
+                              <!-- Inline add subtask row -->
+                              <tr v-if="newSubtaskRow[task.id]">
+                                <td colspan="4" class="px-4 py-3">
+                                  <input v-model="newSubtask.name" placeholder="Subtask name" class="w-full mb-2 p-2 border rounded" />
+                                  <textarea v-model="newSubtask.description" placeholder="Description" class="w-full mb-2 p-2 border rounded"></textarea>
+
+                                  <!-- Assignee Dropdown -->
+                                  <div class="relative mb-2">
+                                    <div @click="isDropdownOpen = !isDropdownOpen" class="w-full p-2 border rounded bg-white cursor-pointer">
+                                      {{ newSubtask.assignee_id.length ? `${newSubtask.assignee_id.length} selected` : 'Select Assignees' }}
+                                    </div>
+                                    <div v-if="isDropdownOpen" class="absolute z-10 bg-white border rounded mt-1 shadow max-h-60 overflow-y-auto w-full">
+                                      <label v-for="user in users" :key="user.id" class="flex items-center px-3 py-2">
+                                        <input type="checkbox" v-model="newSubtask.assignee_id" :value="user.id" class="mr-2" />
+                                        {{ user.name }}
+                                      </label>
+                                    </div>
+                                  </div>
+
+                                  <div class="flex gap-2">
+                                    <button @click="submitInlineSubtask(task.id)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+                                    <button @click="cancelInlineSubtask(task.id)" class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                                  </div>
+                                </td>
+                              </tr>
+
+                              <!-- Add button when inline row is hidden -->
+                              <tr v-else>
+                                <td colspan="4" class="px-4 py-2">
+                                  <button @click="showInlineSubtaskInput(task.id)" class="px-3 py-1 bg-cyan-600 text-white rounded hover:bg-cyan-700">
+                                    + Add Subtask
+                                  </button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </ViewSingleProject>
+      </div>
+    </div>
+  </ViewSingleProject>
 </template>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: all 0.3s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+.modal-enter-to,
+.modal-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+</style>

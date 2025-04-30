@@ -48,7 +48,7 @@ onMounted(() => {
 
         <!-- Dynamic Sidebar Rendering Based on User Role -->
         <Sidebar1 v-if="['Supervising Producer', 'admin'].includes(user.role)" />
-        <Sidebar3 v-else-if="user.role === 'Program Manager'" />
+        <Sidebar3 v-else-if="['Supervising Producer', 'Program Manager'].includes(user.role)" />
         <Sidebar4 v-else-if="['Assoc Producer', 'Editing Supervisor'].includes(user.role)" />
 
 
